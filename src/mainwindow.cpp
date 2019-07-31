@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     contextMenu->addAction(ui->actionOpen);
 
-    QMenu *files = new QMenu(tr("Open Recent"), this);
+    auto *files = new QMenu(tr("Open Recent"), this);
 
     int index = 0;
 
@@ -89,11 +89,78 @@ MainWindow::MainWindow(QWidget *parent) :
         index++;
     }
     files->addSeparator();
-    QAction *clearMenu = new QAction(tr("Clear Menu"), this);
+    auto *clearMenu = new QAction(tr("Clear Menu"), this);
     connect(clearMenu, &QAction::triggered, this, &MainWindow::clearRecent);
     files->addAction(clearMenu);
 
     contextMenu->addMenu(files);
+
+    auto *with = new QMenu(tr("Open With"), this);
+
+    QList<QMap<QString, QString>> programList;
+    #ifdef Q_OS_WIN
+    #elsif Q_OS_MACX
+    #else
+    auto dir = QDir("/usr/share/applications/");
+
+    foreach(auto fileInfo, dir.entryInfoList())
+    {
+        QFile file(fileInfo.absoluteFilePath());
+        file.open(QIODevice::ReadOnly);
+        QTextStream in(&file);
+        QString name;
+        QString icon;
+        QString exec;
+        bool addToList = false;
+        QString line;
+        while (in.readLineInto(&line)) {
+            if (line.startsWith("Name=", Qt::CaseInsensitive))
+            {
+                line.remove("Name=", Qt::CaseInsensitive);
+                name = line;
+            }
+            if (line.startsWith("Icon=", Qt::CaseInsensitive))
+            {
+                line.remove("Icon=", Qt::CaseInsensitive);
+                icon = line;
+            }
+            if (line.startsWith("Exec=", Qt::CaseInsensitive))
+            {
+                line.remove("Exec=", Qt::CaseInsensitive);
+                QRegExp regExp;
+                regExp.setPatternSyntax(QRegExp::Wildcard);
+                regExp.setPattern("%?");
+                line.remove(regExp);
+                exec = line;
+            }
+            if (line.startsWith("MimeType=", Qt::CaseInsensitive))
+            {
+                if (line.contains("image/png", Qt::CaseInsensitive))
+                    addToList = true;
+            }
+        }
+        if (addToList)
+        {
+            QMap<QString, QString> map;
+            map.insert("name", name);
+            map.insert("icon", icon);
+            map.insert("exec", exec);
+            programList.append(map);
+        }
+    }
+    #endif
+
+    qDebug() << programList;
+    foreach(auto map, programList)
+    {
+        auto *action = new QAction(map.value("name"));
+        action->setIcon(QIcon::fromTheme(map.value("icon")));
+        connect(action, &QAction::triggered, [this, map]{
+            QProcess::execute(map.value("exec") + ui->graphicsView->getCurrentFileDetails().fileInfo.absoluteFilePath());
+        });
+        with->addAction(action);
+    }
+    contextMenu->addMenu(with);
 
     contextMenu->addAction(ui->actionOpen_Containing_Folder);
     contextMenu->addAction(ui->actionProperties);
