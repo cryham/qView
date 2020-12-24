@@ -212,6 +212,37 @@ void QVImageCore::postLoad()
     emit fileLoaded();
 }
 
+//  Sort by name, symbols first
+bool MyStrCmp(const std::string& s1, const std::string& s2)
+{
+	bool less = false, cmp = true;
+	int x1 = 0, x2 = 0;
+	do
+	{	char c1 = s1[x1], c2 = s2[x2];
+		if (c1 == c2 && c2)  // same non0
+		{	++x1;  ++x2;	}
+		else
+		{
+			if (!c1 && c2)  // c1 end
+			{	less = true;  cmp = false;  }
+			else if (!c2)  // c2 end
+				cmp = false;
+			else
+			{
+				bool a1 = isalnum(c1), a2 = isalnum(c2);
+				if (!a1 && a2)  // a1 symb <
+				{	less = true;  cmp = false;  }
+				else if (a1 && !a2)
+					cmp = false;
+				else if (c1 < c2)
+				{	less = true;  cmp = false;  }
+				else if (c1 > c2)
+					cmp = false;
+	}	}	}
+	while (cmp);
+	return less;
+}
+
 void QVImageCore::updateFolderInfo()
 {
     // If the current folder changed since the last image, assign a new seed for random sorting
@@ -238,25 +269,23 @@ void QVImageCore::updateFolderInfo()
     }
     }
 
-    if (sortDescending)
+    if (!sortDescending)
         sortFlags.setFlag(QDir::Reversed, true);
 
     currentFileDetails.folderFileInfoList = currentFileDetails.fileInfo.dir().entryInfoList(qvApp->getFilterList(), QDir::Files, sortFlags);
 
     // For more special types of sorting
-    if (sortMode == 0) // Natural sorting
+    if (sortMode == 0)  // Natural sorting, symbols first
     {
-        QCollator collator;
-        collator.setNumericMode(true);
-        std::sort(currentFileDetails.folderFileInfoList.begin(),
+		std::sort(currentFileDetails.folderFileInfoList.begin(),
                   currentFileDetails.folderFileInfoList.end(),
-                  [&collator, this](const QFileInfo &file1, const QFileInfo &file2)
-        {
-            if (sortDescending)
-                return collator.compare(file1.fileName(), file2.fileName()) > 0;
-            else
-                return collator.compare(file1.fileName(), file2.fileName()) < 0;
-        });
+                  [this](const QFileInfo &file1, const QFileInfo &file2)
+		{
+			std::string s1 = file1.fileName().toStdString();
+			std::string s2 = file2.fileName().toStdString();
+			//if (sortDescending)
+			return MyStrCmp(s1, s2);
+		});
     }
     else if (sortMode == 4) // Random sorting
     {
