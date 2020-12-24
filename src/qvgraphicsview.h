@@ -35,7 +35,7 @@ public:
 
     void zoom(int DeltaY, const QPoint &pos, qreal targetScaleFactor = 0);
 
-    QMimeData* getMimeData() const;
+    QMimeData* getMimeData();
     void loadMimeData(const QMimeData *mimeData);
     void loadFile(const QString &fileName);
 
@@ -44,6 +44,7 @@ public:
     void originalSize(bool setVariables = true);
 
     void goToFile(const GoToFileMode &mode, int index = 0);
+	void removeFile();
 
     void settingsUpdated();
 
@@ -52,7 +53,7 @@ public:
     void setSpeed(const int &desiredSpeed);
     void rotateImage(int rotation);
 
-    const QVImageCore::QVFileDetails& getCurrentFileDetails() const { return imageCore.getCurrentFileDetails(); }
+    QVImageCore::QVFileDetails& getCurrentFileDetails() { return imageCore.getCurrentFileDetails(); }
     const QPixmap& getLoadedPixmap() const { return imageCore.getLoadedPixmap(); }
     const QMovie& getLoadedMovie() const { return imageCore.getLoadedMovie(); }
 

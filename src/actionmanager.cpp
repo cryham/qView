@@ -164,6 +164,7 @@ QMenuBar *ActionManager::buildMenuBar(QWidget *parent)
 
     editMenu->addAction(cloneAction("copy"));
     editMenu->addAction(cloneAction("paste"));
+	editMenu->addAction(cloneAction("remove"));
     editMenu->addAction(cloneAction("rename"));
 
     menuBar->addMenu(editMenu);
@@ -501,6 +502,8 @@ void ActionManager::actionTriggered(QAction *triggeredAction, MainWindow *releva
         relevantWindow->copy();
     } else if (key == "paste") {
         relevantWindow->paste();
+	} else if (key == "remove") {
+        relevantWindow->remove();
     } else if (key == "rename") {
         relevantWindow->rename();
     } else if (key == "zoomin") {
@@ -591,7 +594,11 @@ void ActionManager::initializeActionLibrary()
     auto *pasteAction = new QAction(QIcon::fromTheme("edit-paste"), tr("&Paste"));
     actionLibrary.insert("paste", pasteAction);
 
-    auto *renameAction = new QAction(QIcon::fromTheme("edit-rename", QIcon::fromTheme("document-properties")) , tr("R&ename..."));
+	auto *removeAction = new QAction(QIcon::fromTheme("edit-delete"), tr("&Delete..."));
+    removeAction->setData({"disable"});
+    actionLibrary.insert("remove", removeAction);
+
+	auto *renameAction = new QAction(QIcon::fromTheme("edit-rename", QIcon::fromTheme("document-properties")) , tr("R&ename..."));
     renameAction->setData({"disable"});
     actionLibrary.insert("rename", renameAction);
 

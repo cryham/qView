@@ -84,6 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
     contextMenu->addSeparator();
     contextMenu->addAction(actionManager.cloneAction("copy"));
     contextMenu->addAction(actionManager.cloneAction("paste"));
+	contextMenu->addAction(actionManager.cloneAction("remove"));
     contextMenu->addAction(actionManager.cloneAction("rename"));
     contextMenu->addSeparator();
     contextMenu->addAction(actionManager.cloneAction("nextfile"));
@@ -605,6 +606,24 @@ void MainWindow::paste()
     }
 
     graphicsView->loadMimeData(mimeData);
+}
+
+void MainWindow::remove()  // delete file
+{
+	if (!getCurrentFileDetails().isPixmapLoaded)
+        return;
+	
+	auto currentFileInfo = getCurrentFileDetails().fileInfo;
+
+	if (QFile::remove(currentFileInfo.absoluteFilePath()))
+	{
+		nextFile();
+		graphicsView->removeFile();
+	}
+	else
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Error: Could not delete file\n(Check that you have write access)"));
+	}
 }
 
 void MainWindow::rename()

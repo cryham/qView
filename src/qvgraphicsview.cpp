@@ -302,7 +302,7 @@ void QVGraphicsView::zoom(int DeltaY, const QPoint &pos, qreal targetScaleFactor
     centerOn(result);
 }
 
-QMimeData *QVGraphicsView::getMimeData() const
+QMimeData *QVGraphicsView::getMimeData()
 {
     auto *mimeData = new QMimeData();
     if (!getCurrentFileDetails().isPixmapLoaded)
@@ -490,6 +490,14 @@ void QVGraphicsView::originalSize(bool setVariables)
         movieCenterNeedsUpdating = true;
         isOriginalSize = true;
     }
+}
+
+void QVGraphicsView::removeFile()
+{
+	if (getCurrentFileDetails().folderFileInfoList.isEmpty())
+        return;
+	
+	getCurrentFileDetails().folderFileInfoList.removeAt(getCurrentFileDetails().loadedIndexInFolder);
 }
 
 

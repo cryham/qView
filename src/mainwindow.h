@@ -47,7 +47,9 @@ public:
 
     void paste();
 
-    void rename();
+    void remove();
+	
+	void rename();
 
     void zoomIn();
 

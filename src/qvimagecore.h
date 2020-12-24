@@ -68,7 +68,7 @@ public:
     //returned const reference is read-only
     const QPixmap& getLoadedPixmap() const {return loadedPixmap; }
     const QMovie& getLoadedMovie() const {return loadedMovie; }
-    const QVFileDetails& getCurrentFileDetails() const {return currentFileDetails; }
+	QVFileDetails& getCurrentFileDetails() {return currentFileDetails; }
     int getCurrentRotation() const {return currentRotation; }
 
 signals:
