@@ -45,6 +45,10 @@ MainWindow::MainWindow(QWidget *parent) :
     // Initialize graphicsview
     graphicsView = new QVGraphicsView(this);
     centralWidget()->layout()->addWidget(graphicsView);
+//	label = new QLabel("cool");
+//	centralWidget()->layout()->addWidget(label);
+//	label->raise();
+	
 
     // Hide fullscreen label by default
     ui->fullscreenLabel->hide();
@@ -136,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Load window geometry
     QSettings settings;
     restoreGeometry(settings.value("geometry").toByteArray());
+	setWindowState(Qt::WindowState::WindowMaximized);
 
     // Show welcome dialog on first launch
     if (!settings.value("firstlaunch", false).toBool())
@@ -363,7 +368,7 @@ void MainWindow::buildWindowTitle()
         newString += " - "  + QString::number(getCurrentFileDetails().baseImageSize.width());
         newString += " x " + QString::number(getCurrentFileDetails().baseImageSize.height());
         newString += " - " + QVInfoDialog::formatBytes(getCurrentFileDetails().fileInfo.size());
-        newString += " - qView";
+        //newString += " - " + QString::number(int(100.0*graphicsView->getCurrentScale())) + " %";
         break;
     }
     }
@@ -372,6 +377,7 @@ void MainWindow::buildWindowTitle()
 
     // Update fullscreen label to titlebar text as well
     ui->fullscreenLabel->setText(newString);
+	//label->setText(newString);
 
     windowHandle()->setFilePath(getCurrentFileDetails().fileInfo.absoluteFilePath());
 }
@@ -573,9 +579,13 @@ void MainWindow::openContainingFolder()
 
 void MainWindow::showFileInfo()
 {
+	if (info->isVisible())
+	{
+		info->hide();
+		return;
+	}
     refreshProperties();
     info->show();
-    info->raise();
 }
 
 void MainWindow::copy()
@@ -860,6 +870,7 @@ void MainWindow::toggleFullScreen()
 {
     if (windowState() == Qt::WindowFullScreen)
     {
+		storedWindowState = Qt::WindowState::WindowMaximized;
         setWindowState(storedWindowState);
     }
     else

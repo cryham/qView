@@ -30,6 +30,8 @@ private:
 
     int frameCount;
 
+	void keyPressEvent(QKeyEvent *kev) override;
+	
 public:
     // If Qt 5.10 is available, the built-in function will be used--for Qt 5.9, a custom solution will be used
     static QString formatBytes(qint64 bytes)

@@ -25,6 +25,11 @@ QVInfoDialog::~QVInfoDialog()
     delete ui;
 }
 
+void QVInfoDialog::keyPressEvent(QKeyEvent *kev)
+{
+	close();
+}
+
 void QVInfoDialog::setInfo(const QFileInfo &value, const int &value2, const int &value3, const int &value4)
 {
     selectedFileInfo = value;
