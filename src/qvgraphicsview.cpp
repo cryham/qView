@@ -507,6 +507,7 @@ void QVGraphicsView::goToFile(const GoToFileMode &mode, int index)
         return;
 
     int newIndex = getCurrentFileDetails().loadedIndexInFolder;
+	int lastIndex = getCurrentFileDetails().folderFileInfoList.size()-1;
 
     switch (mode) {
     case GoToFileMode::constant:
@@ -524,7 +525,7 @@ void QVGraphicsView::goToFile(const GoToFileMode &mode, int index)
         if (newIndex == 0)
         {
             if (isLoopFoldersEnabled)
-                newIndex = getCurrentFileDetails().folderFileInfoList.size()-1;
+                newIndex = lastIndex;
             else
                 emit cancelSlideshow();
         }
@@ -534,7 +535,7 @@ void QVGraphicsView::goToFile(const GoToFileMode &mode, int index)
     }
     case GoToFileMode::next:
     {
-        if (getCurrentFileDetails().folderFileInfoList.size()-1 == newIndex)
+        if (lastIndex == newIndex)
         {
             if (isLoopFoldersEnabled)
                 newIndex = 0;
@@ -545,9 +546,23 @@ void QVGraphicsView::goToFile(const GoToFileMode &mode, int index)
             newIndex++;
         break;
     }
+	case GoToFileMode::previousSkip:
+	{
+		newIndex -= 20;
+		if (newIndex < 0)
+			newIndex = 0;
+		break;
+	}
+	case GoToFileMode::nextSkip:
+	{
+		newIndex += 20;
+		if (newIndex > lastIndex)
+			newIndex = lastIndex;
+		break;
+	}
     case GoToFileMode::last:
     {
-        newIndex = getCurrentFileDetails().folderFileInfoList.size()-1;
+        newIndex = lastIndex;
         break;
     }
     }

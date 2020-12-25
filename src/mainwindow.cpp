@@ -712,14 +712,18 @@ void MainWindow::firstFile()
     graphicsView->goToFile(QVGraphicsView::GoToFileMode::first);
 }
 
-void MainWindow::previousFile()
+void MainWindow::previousFile(bool skip)
 {
-    graphicsView->goToFile(QVGraphicsView::GoToFileMode::previous);
+    graphicsView->goToFile(skip ?
+		QVGraphicsView::GoToFileMode::previousSkip :
+		QVGraphicsView::GoToFileMode::previous);
 }
 
-void MainWindow::nextFile()
+void MainWindow::nextFile(bool skip)
 {
-    graphicsView->goToFile(QVGraphicsView::GoToFileMode::next);
+    graphicsView->goToFile(skip ?
+		QVGraphicsView::GoToFileMode::nextSkip :
+		QVGraphicsView::GoToFileMode::next);
 }
 
 void MainWindow::lastFile()

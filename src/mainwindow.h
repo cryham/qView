@@ -36,7 +36,6 @@ public:
     void openRecent(int i);
 
     void openUrl(const QUrl &url);
-
     void pickUrl();
 
     void openContainingFolder();
@@ -44,47 +43,31 @@ public:
     void showFileInfo();
 
     void copy();
-
     void paste();
-
     void remove();
-	
 	void rename();
 
     void zoomIn();
-
     void zoomOut();
-
     void resetZoom();
-
     void originalSize();
 
     void rotateRight();
-
     void rotateLeft();
-
     void mirror();
-
     void flip();
 
     void firstFile();
-
-    void previousFile();
-
-    void nextFile();
-
-    void lastFile();
+	void lastFile();
+    void previousFile(bool skip = false);
+    void nextFile(bool skip = false);
 
     void saveFrameAs();
-
     void pause();
-
     void nextFrame();
 
     void decreaseSpeed();
-
     void resetSpeed();
-
     void increaseSpeed();
 
     void toggleFullScreen();
@@ -95,9 +78,7 @@ public slots:
     void openFile(const QString &fileName);
 
     void toggleSlideshow();
-
     void slideshowAction();
-
     void cancelSlideshow();
 
     void fileLoaded();
@@ -107,14 +88,11 @@ protected:
 
     void contextMenuEvent(QContextMenuEvent *event) override;
 
-    void showEvent(QShowEvent *event) override;
-
+	void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
-
     void changeEvent(QEvent *event) override;
 
-    void mousePressEvent(QMouseEvent *event) override;
-
+	void mousePressEvent(QMouseEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 protected slots:

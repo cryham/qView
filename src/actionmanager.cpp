@@ -178,9 +178,11 @@ QMenuBar *ActionManager::buildMenuBar(QWidget *parent)
     auto *goMenu = new QMenu(tr("&Go"), menuBar);
 
     goMenu->addAction(cloneAction("firstfile"));
+	goMenu->addAction(cloneAction("lastfile"));
     goMenu->addAction(cloneAction("previousfile"));
     goMenu->addAction(cloneAction("nextfile"));
-    goMenu->addAction(cloneAction("lastfile"));
+	goMenu->addAction(cloneAction("previousfileskip"));
+    goMenu->addAction(cloneAction("nextfileskip"));
 
     menuBar->addMenu(goMenu);
     // End of go menu
@@ -498,7 +500,8 @@ void ActionManager::actionTriggered(QAction *triggeredAction, MainWindow *releva
         relevantWindow->openContainingFolder();
     } else if (key == "showfileinfo") {
         relevantWindow->showFileInfo();
-    } else if (key == "copy") {
+
+	} else if (key == "copy") {
         relevantWindow->copy();
     } else if (key == "paste") {
         relevantWindow->paste();
@@ -506,45 +509,58 @@ void ActionManager::actionTriggered(QAction *triggeredAction, MainWindow *releva
         relevantWindow->remove();
     } else if (key == "rename") {
         relevantWindow->rename();
-    } else if (key == "zoomin") {
+
+	} else if (key == "zoomin") {
         relevantWindow->zoomIn();
     } else if (key == "zoomout") {
         relevantWindow->zoomOut();
-    } else if (key == "resetzoom") {
+	} else if (key == "resetzoom") {
         relevantWindow->resetZoom();
     } else if (key == "originalsize") {
         relevantWindow->originalSize();
-    } else if (key == "rotateright") {
+
+	} else if (key == "rotateright") {
         relevantWindow->rotateRight();
     } else if (key == "rotateleft") {
         relevantWindow->rotateLeft();
-    } else if (key == "mirror") {
+	} else if (key == "mirror") {
         relevantWindow->mirror();
     } else if (key == "flip") {
         relevantWindow->flip();
-    } else if (key == "fullscreen") {
+
+	} else if (key == "fullscreen") {
         relevantWindow->toggleFullScreen();
-    } else if (key == "firstfile") {
+
+	} else if (key == "firstfile") {
         relevantWindow->firstFile();
-    } else if (key == "previousfile") {
+	} else if (key == "lastfile") {
+        relevantWindow->lastFile();
+
+	} else if (key == "previousfile") {
         relevantWindow->previousFile();
     } else if (key == "nextfile") {
         relevantWindow->nextFile();
-    } else if (key == "lastfile") {
-        relevantWindow->lastFile();
-    } else if (key == "saveframeas") {
+	} else if (key == "previousfileskip") {
+        relevantWindow->previousFile(true);
+    } else if (key == "nextfileskip") {
+        relevantWindow->nextFile(true);
+
+	} else if (key == "saveframeas") {
         relevantWindow->saveFrameAs();
-    } else if (key == "pause") {
+
+	} else if (key == "pause") {
         relevantWindow->pause();
     } else if (key == "nextframe") {
         relevantWindow->nextFrame();
-    } else if (key == "decreasespeed") {
+
+	} else if (key == "decreasespeed") {
         relevantWindow->decreaseSpeed();
     } else if (key == "resetspeed") {
         relevantWindow->resetSpeed();
     } else if (key == "increasespeed") {
         relevantWindow->increaseSpeed();
-    } else if (key == "slideshow") {
+
+	} else if (key == "slideshow") {
         relevantWindow->toggleSlideshow();
     }
 }
@@ -587,6 +603,7 @@ void ActionManager::initializeActionLibrary()
     showFileInfoAction->setData({"disable"});
     actionLibrary.insert("showfileinfo", showFileInfoAction);
 
+	
     auto *copyAction = new QAction(QIcon::fromTheme("edit-copy"), tr("&Copy"));
     copyAction->setData({"disable"});
     actionLibrary.insert("copy", copyAction);
@@ -602,6 +619,7 @@ void ActionManager::initializeActionLibrary()
     renameAction->setData({"disable"});
     actionLibrary.insert("rename", renameAction);
 
+	
     auto *zoomInAction = new QAction(QIcon::fromTheme("zoom-in"), tr("Zoom &In"));
     zoomInAction->setData({"disable"});
     actionLibrary.insert("zoomin", zoomInAction);
@@ -618,6 +636,7 @@ void ActionManager::initializeActionLibrary()
     originalSizeAction->setData({"disable"});
     actionLibrary.insert("originalsize", originalSizeAction);
 
+	
     auto *rotateRightAction = new QAction(QIcon::fromTheme("object-rotate-right"), tr("Rotate &Right"));
     rotateRightAction->setData({"disable"});
     actionLibrary.insert("rotateright", rotateRightAction);
@@ -634,15 +653,22 @@ void ActionManager::initializeActionLibrary()
     flipAction->setData({"disable"});
     actionLibrary.insert("flip", flipAction);
 
+	
     auto *fullScreenAction = new QAction(QIcon::fromTheme("view-fullscreen"), tr("Enter F&ull Screen"));
     fullScreenAction->setMenuRole(QAction::NoRole);
     actionLibrary.insert("fullscreen", fullScreenAction);
 
+	
     auto *firstFileAction = new QAction(QIcon::fromTheme("go-first"), tr("&First File"));
     firstFileAction->setData({"disable"});
     actionLibrary.insert("firstfile", firstFileAction);
 
-    auto *previousFileAction = new QAction(QIcon::fromTheme("go-previous"), tr("Previous Fi&le"));
+	auto *lastFileAction = new QAction(QIcon::fromTheme("go-last"), tr("Las&t File"));
+    lastFileAction->setData({"disable"});
+    actionLibrary.insert("lastfile", lastFileAction);
+
+	
+	auto *previousFileAction = new QAction(QIcon::fromTheme("go-previous"), tr("Previous Fi&le"));
     previousFileAction->setData({"disable"});
     actionLibrary.insert("previousfile", previousFileAction);
 
@@ -650,14 +676,20 @@ void ActionManager::initializeActionLibrary()
     nextFileAction->setData({"disable"});
     actionLibrary.insert("nextfile", nextFileAction);
 
-    auto *lastFileAction = new QAction(QIcon::fromTheme("go-last"), tr("Las&t File"));
-    lastFileAction->setData({"disable"});
-    actionLibrary.insert("lastfile", lastFileAction);
+	auto *previousFileSkipAction = new QAction(QIcon::fromTheme("go-previous"), tr("Previous Fi&le Skip"));
+    previousFileSkipAction->setData({"disable"});
+    actionLibrary.insert("previousfileskip", previousFileSkipAction);
 
+    auto *nextFileSkipAction = new QAction(QIcon::fromTheme("go-next"), tr("&Next File Skip"));
+    nextFileSkipAction->setData({"disable"});
+    actionLibrary.insert("nextfileskip", nextFileSkipAction);
+
+	
     auto *saveFrameAsAction = new QAction(QIcon::fromTheme("document-save-as"), tr("Save Frame &As..."));
     saveFrameAsAction->setData({"gifdisable"});
     actionLibrary.insert("saveframeas", saveFrameAsAction);
 
+	
     auto *pauseAction = new QAction(QIcon::fromTheme("media-playback-pause"), tr("Pa&use"));
     pauseAction->setData({"gifdisable"});
     actionLibrary.insert("pause", pauseAction);
@@ -678,6 +710,7 @@ void ActionManager::initializeActionLibrary()
     increaseSpeedAction->setData({"gifdisable"});
     actionLibrary.insert("increasespeed", increaseSpeedAction);
 
+	
     auto *slideshowAction = new QAction(QIcon::fromTheme("media-playback-start"), tr("Start S&lideshow"));
     slideshowAction->setData({"disable"});
     actionLibrary.insert("slideshow", slideshowAction);

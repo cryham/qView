@@ -29,7 +29,9 @@ public:
        first,
        previous,
        next,
-       last
+       last,
+       previousSkip,
+       nextSkip
     };
     Q_ENUM(GoToFileMode)
 
