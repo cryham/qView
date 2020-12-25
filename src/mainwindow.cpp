@@ -357,11 +357,11 @@ void MainWindow::buildWindowTitle()
     }
     case 3:
     {
+		newString += getCurrentFileDetails().fileInfo.fileName() + " - ";
         newString += QString::number(getCurrentFileDetails().loadedIndexInFolder+1);
         newString += "/" + QString::number(getCurrentFileDetails().folderFileInfoList.count());
-        newString += " - " + getCurrentFileDetails().fileInfo.fileName();
         newString += " - "  + QString::number(getCurrentFileDetails().baseImageSize.width());
-        newString += "x" + QString::number(getCurrentFileDetails().baseImageSize.height());
+        newString += " x " + QString::number(getCurrentFileDetails().baseImageSize.height());
         newString += " - " + QVInfoDialog::formatBytes(getCurrentFileDetails().fileInfo.size());
         newString += " - qView";
         break;
