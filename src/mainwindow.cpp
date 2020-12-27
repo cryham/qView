@@ -646,12 +646,26 @@ void MainWindow::rate(bool add, bool front)
     auto currentFileInfo = getCurrentFileDetails().fileInfo;
 	auto name = currentFileInfo.baseName(), ext = currentFileInfo.suffix();
 	if (front)
-	{
-		const QChar ch[] = {'!!','!','(',')','+',',,',',','-','^','_','``','`'};
-        // todo ..
+	{	//  front rating
+		const int all = 9;  // rating chars, sorted
+		const QChar ch[all] = {'!','(',')','+',',','-','^','_','`'};
+
+		int i;
+		for (i=0; i < all; ++i)
+		if (name.startsWith(ch[i]))
+		{
+			name = name.remove(0, 1);
+			i += add ? -1 : 1;
+			if (i < 0)  i = 0;
+			if (i < all)
+				name = ch[i] + name;
+			break;
+		}
+		if (i == all && add)  // none
+			name = ch[all-1] + name;
 	}
 	else
-	{
+	{	//  end rating
 		if (add)
 			name += "`";
 		else
@@ -665,7 +679,12 @@ void MainWindow::rate(bool add, bool front)
 		return;
 
 	if (QFile::rename(currentFileInfo.absoluteFilePath(), newFilePath))
-		openFile(newFilePath);
+	{
+		if (!front)
+			openFile(newFilePath);
+		else
+			nextFile();  // go to next, don't loose current pos
+	}
 	else
 		QMessageBox::critical(this, tr("Error"), tr("Error: Could not rename file\n(Check that you have write access)"));
 }
