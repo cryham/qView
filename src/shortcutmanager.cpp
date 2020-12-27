@@ -55,12 +55,22 @@ void ShortcutManager::initializeShortcutsList()
 	shortcutsList.append({tr("Delete"), "remove", QStringList({QKeySequence(Qt::ALT + Qt::Key_Delete).toString()}), {}});
     shortcutsList.append({tr("Rename"), "rename", QStringList({QKeySequence(Qt::Key_F2).toString(), QKeySequence(Qt::CTRL + Qt::Key_R).toString()}), {}});
 
-	shortcutsList.append({tr("First File"), "firstfile", QStringList(QKeySequence(Qt::Key_Home).toString()), {}});
-	shortcutsList.append({tr("Last File"), "lastfile", QStringList(QKeySequence(Qt::Key_End).toString()), {}});
-    shortcutsList.append({tr("Previous File"), "previousfile", QStringList(QKeySequence(Qt::Key_Left).toString()), {}});
-    shortcutsList.append({tr("Next File"), "nextfile", QStringList(QKeySequence(Qt::Key_Right).toString()), {}});
-	shortcutsList.append({tr("Previous File Skip"), "previousfileskip", QStringList(QKeySequence(Qt::Key_PageUp).toString()), {}});
-    shortcutsList.append({tr("Next File Skip"), "nextfileskip", QStringList(QKeySequence(Qt::Key_PageDown).toString()), {}});
+	//  Rate
+	shortcutsList.append({tr("Rating Front Increase"), "rateFrontInc", QStringList(QKeySequence(Qt::ALT + Qt::Key_3).toString()), {}});
+	shortcutsList.append({tr("Rating Front Decrease"), "rateFrontDec", QStringList(QKeySequence(Qt::ALT + Qt::Key_4).toString()), {}});
+	shortcutsList.append({tr("Rating End Add"), "rateEndAdd", QStringList(QKeySequence(Qt::ALT + Qt::Key_1).toString()), {}});
+	shortcutsList.append({tr("Rating End Remove"), "rateEndRemove", QStringList(QKeySequence(Qt::ALT + Qt::Key_2).toString()), {}});
+
+	shortcutsList.append({tr("First File"), "firstFile", QStringList(QKeySequence(Qt::Key_Home).toString()), {}});
+	shortcutsList.append({tr("Last File"), "lastFile", QStringList(QKeySequence(Qt::Key_End).toString()), {}});
+    shortcutsList.append({tr("Previous File"), "previousFile", QStringList(QKeySequence(Qt::Key_Left).toString()), {}});
+    shortcutsList.append({tr("Next File"), "nextFile", QStringList(QKeySequence(Qt::Key_Right).toString()), {}});
+
+	//  Skip
+	shortcutsList.append({tr("Previous File Skip"), "previousFileSkip", QStringList(QKeySequence(Qt::Key_PageUp).toString()), {}});
+    shortcutsList.append({tr("Next File Skip"), "nextFileSkip", QStringList(QKeySequence(Qt::Key_PageDown).toString()), {}});
+	shortcutsList.append({tr("Previous File Rated"), "previousFileRate", QStringList(QKeySequence(Qt::Key_Up).toString()), {}});
+    shortcutsList.append({tr("Next File Rated"), "nextFileRate", QStringList(QKeySequence(Qt::Key_Down).toString()), {}});
 
 	shortcutsList.append({tr("Zoom In"), "zoomin", keyBindingsToStringList(QKeySequence::ZoomIn), {}});
     // Allow zooming with Ctrl + plus like a regular person (without holding shift)
@@ -70,8 +80,8 @@ void ShortcutManager::initializeShortcutsList()
     shortcutsList.append({tr("Reset Zoom"), "resetzoom", QStringList(QKeySequence(Qt::CTRL + Qt::Key_0).toString()), {}});
     shortcutsList.append({tr("Original Size"), "originalsize", QStringList(QKeySequence(Qt::Key_O).toString()), {}});
     
-	shortcutsList.append({tr("Rotate Right"), "rotateright", QStringList(QKeySequence(Qt::Key_Up).toString()), {}});
-    shortcutsList.append({tr("Rotate Left"), "rotateleft", QStringList(QKeySequence(Qt::Key_Down).toString()), {}});
+	shortcutsList.append({tr("Rotate Right"), "rotateright", QStringList(QKeySequence(Qt::Key_R).toString()), {}});
+    shortcutsList.append({tr("Rotate Left"), "rotateleft", QStringList(QKeySequence(Qt::Key_T).toString()), {}});
     shortcutsList.append({tr("Mirror"), "mirror", QStringList(QKeySequence(Qt::Key_F).toString()), {}});
     shortcutsList.append({tr("Flip"), "flip", QStringList(QKeySequence(Qt::CTRL + Qt::Key_F).toString()), {}});
 

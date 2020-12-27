@@ -26,12 +26,10 @@ public:
     enum class GoToFileMode
     {
        constant,
-       first,
-       previous,
-       next,
-       last,
-       previousSkip,
-       nextSkip
+       first, last,
+       previous, next,
+       previousSkip, nextSkip,
+       previousRate, nextRate
     };
     Q_ENUM(GoToFileMode)
 
@@ -58,6 +56,7 @@ public:
     QVImageCore::QVFileDetails& getCurrentFileDetails() { return imageCore.getCurrentFileDetails(); }
     const QPixmap& getLoadedPixmap() const { return imageCore.getLoadedPixmap(); }
     const QMovie& getLoadedMovie() const { return imageCore.getLoadedMovie(); }
+	QGraphicsTextItem *text;
 
 signals:
     void cancelSlideshow();
@@ -92,7 +91,6 @@ protected:
     void centerOn(qreal x, qreal y);
 
     void centerOn(const QGraphicsItem *item);
-
 
 private slots:
     void animatedFrameChanged(QRect rect);

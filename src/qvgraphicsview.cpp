@@ -11,6 +11,7 @@
 #include <QtMath>
 #include <QGestureEvent>
 #include <QScrollBar>
+#include <QLabel>
 
 QVGraphicsView::QVGraphicsView(QWidget *parent) : QGraphicsView(parent)
 {
@@ -56,11 +57,20 @@ QVGraphicsView::QVGraphicsView(QWidget *parent) : QGraphicsView(parent)
 
     expensiveScaleTimer = new QTimer(this);
     expensiveScaleTimer->setSingleShot(true);
-    expensiveScaleTimer->setInterval(50);
+    expensiveScaleTimer->setInterval(10);
     connect(expensiveScaleTimer, &QTimer::timeout, this, [this]{scaleExpensively(ScaleMode::resetScale);});
 
     loadedPixmapItem = new QGraphicsPixmapItem();
     scene->addItem(loadedPixmapItem);
+	
+	//QLabel* label = new QLabel("cool");
+	//	centralWidget()->layout()->addWidget(label);
+	//	label->raise();
+	//scene->addWidget(label);
+
+	//text = scene->addText("cool");
+	//text->setPos(-10,-1000);
+	//text->setScale(100);
 
     // Connect to settings signal
     connect(&qvApp->getSettingsManager(), &SettingsManager::settingsUpdated, this, &QVGraphicsView::settingsUpdated);
@@ -381,7 +391,7 @@ void QVGraphicsView::postLoad()
 
     updateLoadedPixmapItem();
     qvApp->getActionManager().addFileToRecentsList(getCurrentFileDetails().fileInfo);
-
+	
     emit fileLoaded();
 }
 
@@ -520,7 +530,13 @@ void QVGraphicsView::goToFile(const GoToFileMode &mode, int index)
         newIndex = 0;
         break;
     }
-    case GoToFileMode::previous:
+	case GoToFileMode::last:
+    {
+        newIndex = lastIndex;
+        break;
+    }
+
+	case GoToFileMode::previous:
     {
         if (newIndex == 0)
         {
@@ -546,6 +562,7 @@ void QVGraphicsView::goToFile(const GoToFileMode &mode, int index)
             newIndex++;
         break;
     }
+	
 	case GoToFileMode::previousSkip:
 	{
 		newIndex -= 20;
@@ -560,11 +577,29 @@ void QVGraphicsView::goToFile(const GoToFileMode &mode, int index)
 			newIndex = lastIndex;
 		break;
 	}
-    case GoToFileMode::last:
-    {
-        newIndex = lastIndex;
-        break;
-    }
+		
+	case GoToFileMode::previousRate:
+	{
+		while (newIndex > 0)
+		{
+			--newIndex;
+			const QFileInfo nextImage = getCurrentFileDetails().folderFileInfoList.value(newIndex);
+			if (nextImage.isFile() && nextImage.absoluteFilePath().contains("`."))
+				break;
+		}
+		break;
+	}
+	case GoToFileMode::nextRate:
+	{
+		while (newIndex < lastIndex)
+		{
+			++newIndex;
+			const QFileInfo nextImage = getCurrentFileDetails().folderFileInfoList.value(newIndex);
+			if (nextImage.isFile() && nextImage.absoluteFilePath().contains("`."))
+				break;
+		}
+		break;
+	}
     }
 
     const QFileInfo nextImage = getCurrentFileDetails().folderFileInfoList.value(newIndex);

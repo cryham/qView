@@ -46,6 +46,8 @@ public:
     void paste();
     void remove();
 	void rename();
+	
+	void rate(bool add = true, bool front = false);	
 
     void zoomIn();
     void zoomOut();
@@ -59,8 +61,8 @@ public:
 
     void firstFile();
 	void lastFile();
-    void previousFile(bool skip = false);
-    void nextFile(bool skip = false);
+    void previousFile(bool skip = false, bool rate = false);
+    void nextFile(bool skip = false, bool rate = false);
 
     void saveFrameAs();
     void pause();

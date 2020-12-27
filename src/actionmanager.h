@@ -76,49 +76,36 @@ public:
     void settingsUpdated();
 
     QAction *cloneAction(const QString &key);
-
     QAction *getAction(const QString &key) const;
 
     QList<QAction*> getAllInstancesOfAction(const QString &key) const;
-
     QList<QAction*> getAllClonesOfAction(const QString &key) const;
-
     QList<QAction*> getAllClonesOfAction(const QString &key, QWidget *parent) const;
 
     void untrackClonedActions(const QList<QAction*> &actions);
-
     void untrackClonedActions(const QMenu *menu);
-
     void untrackClonedActions(const QMenuBar *menuBar);
 
     QMenuBar *buildMenuBar(QWidget *parent = nullptr);
 
+	QMenu *buildRatingMenu(bool addIcon = true, QWidget *parent = nullptr);
     QMenu *buildViewMenu(bool addIcon = true, QWidget *parent = nullptr);
-
     QMenu *buildToolsMenu(bool addIcon = true, QWidget *parent = nullptr);
-
     QMenu *buildHelpMenu(bool addIcon = true, QWidget *parent = nullptr);
-
     QMenu *buildRecentsMenu(bool includeClearAction = true, QWidget *parent = nullptr);
 
     void loadRecentsList();
-
     void saveRecentsList();
-
     void addFileToRecentsList(const QFileInfo &file);
 
     void auditRecentsList();
-
     void clearRecentsList();
-
     void updateRecentsMenu();
 
     static void actionTriggered(QAction *triggeredAction);
-
     static void actionTriggered(QAction *triggeredAction, MainWindow *relevantWindow);
 
     const QList<SRecent> &getRecentsList() const { return recentsList; }
-
     const QHash<QString, QAction*> &getActionLibrary() const { return actionLibrary; }
 
     int getRecentsListMaxLength() const { return recentsListMaxLength; };
@@ -131,7 +118,6 @@ protected:
 
 private:
     QHash<QString, QAction*> actionLibrary;
-
     QMultiHash<QString, QAction*> actionCloneLibrary;
 
     QMultiHash<QString, QMenu*> menuCloneLibrary;

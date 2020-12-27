@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 
     // Hide fullscreen label by default
+	//ui->fullscreenLabel->stackUnder(ui->centralWidget);
     ui->fullscreenLabel->hide();
 
     // Connect graphicsview signals
@@ -91,9 +92,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	contextMenu->addAction(actionManager.cloneAction("remove"));
     contextMenu->addAction(actionManager.cloneAction("rename"));
     contextMenu->addSeparator();
-    contextMenu->addAction(actionManager.cloneAction("nextfile"));
-    contextMenu->addAction(actionManager.cloneAction("previousfile"));
+    contextMenu->addAction(actionManager.cloneAction("nextFile"));
+    contextMenu->addAction(actionManager.cloneAction("previousFile"));
     contextMenu->addSeparator();
+	contextMenu->addMenu(actionManager.buildRatingMenu(true, contextMenu));
     contextMenu->addMenu(actionManager.buildViewMenu(true, contextMenu));
     contextMenu->addMenu(actionManager.buildToolsMenu(true, contextMenu));
     contextMenu->addMenu(actionManager.buildHelpMenu(true, contextMenu));
@@ -636,6 +638,38 @@ void MainWindow::remove()  // delete file
 	}
 }
 
+void MainWindow::rate(bool add, bool front)
+{
+	if (!getCurrentFileDetails().isPixmapLoaded)
+        return;
+
+    auto currentFileInfo = getCurrentFileDetails().fileInfo;
+	auto name = currentFileInfo.baseName(), ext = currentFileInfo.suffix();
+	if (front)
+	{
+		const QChar ch[] = {'!!','!','(',')','+',',,',',','-','^','_','``','`'};
+        // todo ..
+	}
+	else
+	{
+		if (add)
+			name += "`";
+		else
+			if (name.endsWith("`"))
+				name.remove(name.length()-1, 1);
+	}
+	auto newFileName = name + "." + ext;
+	auto newFilePath = QDir::cleanPath(currentFileInfo.absolutePath() + QDir::separator() + newFileName);
+
+	if (currentFileInfo.absoluteFilePath() == newFilePath)
+		return;
+
+	if (QFile::rename(currentFileInfo.absoluteFilePath(), newFilePath))
+		openFile(newFilePath);
+	else
+		QMessageBox::critical(this, tr("Error"), tr("Error: Could not rename file\n(Check that you have write access)"));
+}
+
 void MainWindow::rename()
 {
     if (!getCurrentFileDetails().isPixmapLoaded)
@@ -722,18 +756,20 @@ void MainWindow::firstFile()
     graphicsView->goToFile(QVGraphicsView::GoToFileMode::first);
 }
 
-void MainWindow::previousFile(bool skip)
+void MainWindow::previousFile(bool skip, bool rate)
 {
-    graphicsView->goToFile(skip ?
-		QVGraphicsView::GoToFileMode::previousSkip :
-		QVGraphicsView::GoToFileMode::previous);
+	graphicsView->goToFile(
+		rate ? QVGraphicsView::GoToFileMode::previousRate :
+		skip ? QVGraphicsView::GoToFileMode::previousSkip :
+				QVGraphicsView::GoToFileMode::previous);
 }
 
-void MainWindow::nextFile(bool skip)
+void MainWindow::nextFile(bool skip, bool rate)
 {
-    graphicsView->goToFile(skip ?
-		QVGraphicsView::GoToFileMode::nextSkip :
-		QVGraphicsView::GoToFileMode::next);
+	graphicsView->goToFile(
+		rate ? QVGraphicsView::GoToFileMode::nextRate :
+		skip ? QVGraphicsView::GoToFileMode::nextSkip :
+				QVGraphicsView::GoToFileMode::next);
 }
 
 void MainWindow::lastFile()

@@ -166,23 +166,35 @@ QMenuBar *ActionManager::buildMenuBar(QWidget *parent)
     editMenu->addAction(cloneAction("paste"));
 	editMenu->addAction(cloneAction("remove"));
     editMenu->addAction(cloneAction("rename"));
+	editMenu->addSeparator();  // Rate
+	editMenu->addAction(cloneAction("rateEndAdd"));
+	editMenu->addAction(cloneAction("rateEndRemove"));
+	editMenu->addAction(cloneAction("rateFrontInc"));
+	editMenu->addAction(cloneAction("rateFrontDec"));
 
     menuBar->addMenu(editMenu);
     // End of edit menu
 
-    // Beginning of view menu
+	// Beginning of rating menu
+    menuBar->addMenu(buildRatingMenu(false, menuBar));
+    // End of rating menu
+
+	// Beginning of view menu
     menuBar->addMenu(buildViewMenu(false, menuBar));
     // End of view menu
 
     // Beginning of go menu
     auto *goMenu = new QMenu(tr("&Go"), menuBar);
 
-    goMenu->addAction(cloneAction("firstfile"));
-	goMenu->addAction(cloneAction("lastfile"));
-    goMenu->addAction(cloneAction("previousfile"));
-    goMenu->addAction(cloneAction("nextfile"));
-	goMenu->addAction(cloneAction("previousfileskip"));
-    goMenu->addAction(cloneAction("nextfileskip"));
+    goMenu->addAction(cloneAction("firstFile"));
+	goMenu->addAction(cloneAction("lastFile"));
+    goMenu->addAction(cloneAction("previousFile"));
+    goMenu->addAction(cloneAction("nextFile"));
+	goMenu->addSeparator();  // Skip
+	goMenu->addAction(cloneAction("previousFileSkip"));
+    goMenu->addAction(cloneAction("nextFileSkip"));
+	goMenu->addAction(cloneAction("previousFileRate"));
+    goMenu->addAction(cloneAction("nextFileRate"));
 
     menuBar->addMenu(goMenu);
     // End of go menu
@@ -202,6 +214,29 @@ QMenuBar *ActionManager::buildMenuBar(QWidget *parent)
     // End of help menu
 
     return menuBar;
+}
+
+QMenu *ActionManager::buildRatingMenu(bool addIcon, QWidget *parent)
+{
+    auto *rateMenu = new QMenu(tr("&Rating"), parent);
+    rateMenu->menuAction()->setData("rating");
+    if (addIcon)
+        rateMenu->setIcon(QIcon::fromTheme("user-bookmarks"));
+
+	rateMenu->addAction(cloneAction("rateEndAdd"));
+	rateMenu->addAction(cloneAction("rateEndRemove"));
+	rateMenu->addSeparator();
+	rateMenu->addAction(cloneAction("rateFrontInc"));
+	rateMenu->addAction(cloneAction("rateFrontDec"));
+    rateMenu->addSeparator();
+	rateMenu->addAction(cloneAction("nextFileSkip"));
+    rateMenu->addAction(cloneAction("previousFileSkip"));
+	rateMenu->addSeparator();
+	rateMenu->addAction(cloneAction("nextFileRate"));
+    rateMenu->addAction(cloneAction("previousFileRate"));
+
+    menuCloneLibrary.insert(rateMenu->menuAction()->data().toString(), rateMenu);
+    return rateMenu;
 }
 
 QMenu *ActionManager::buildViewMenu(bool addIcon, QWidget *parent)
@@ -509,6 +544,15 @@ void ActionManager::actionTriggered(QAction *triggeredAction, MainWindow *releva
         relevantWindow->remove();
     } else if (key == "rename") {
         relevantWindow->rename();
+	
+	} else if (key == "rateEndAdd") {  // rate
+        relevantWindow->rate(true);
+	} else if (key == "rateEndRemove") {
+        relevantWindow->rate(false);
+	} else if (key == "rateFrontInc") {
+        relevantWindow->rate(true, true);
+	} else if (key == "rateFrontDec") {
+        relevantWindow->rate(false, true);
 
 	} else if (key == "zoomin") {
         relevantWindow->zoomIn();
@@ -531,19 +575,23 @@ void ActionManager::actionTriggered(QAction *triggeredAction, MainWindow *releva
 	} else if (key == "fullscreen") {
         relevantWindow->toggleFullScreen();
 
-	} else if (key == "firstfile") {
+	} else if (key == "firstFile") {
         relevantWindow->firstFile();
-	} else if (key == "lastfile") {
+	} else if (key == "lastFile") {
         relevantWindow->lastFile();
 
-	} else if (key == "previousfile") {
+	} else if (key == "previousFile") {
         relevantWindow->previousFile();
-    } else if (key == "nextfile") {
+    } else if (key == "nextFile") {
         relevantWindow->nextFile();
-	} else if (key == "previousfileskip") {
+	} else if (key == "previousFileSkip") {  // skip
         relevantWindow->previousFile(true);
-    } else if (key == "nextfileskip") {
+    } else if (key == "nextFileSkip") {
         relevantWindow->nextFile(true);
+	} else if (key == "previousFileRate") {
+        relevantWindow->previousFile(false, true);
+    } else if (key == "nextFileRate") {
+        relevantWindow->nextFile(false, true);
 
 	} else if (key == "saveframeas") {
         relevantWindow->saveFrameAs();
@@ -605,20 +653,31 @@ void ActionManager::initializeActionLibrary()
 
 	
     auto *copyAction = new QAction(QIcon::fromTheme("edit-copy"), tr("&Copy"));
-    copyAction->setData({"disable"});
-    actionLibrary.insert("copy", copyAction);
+    copyAction->setData({"disable"});    actionLibrary.insert("copy", copyAction);
 
     auto *pasteAction = new QAction(QIcon::fromTheme("edit-paste"), tr("&Paste"));
     actionLibrary.insert("paste", pasteAction);
 
 	auto *removeAction = new QAction(QIcon::fromTheme("edit-delete"), tr("&Delete..."));
-    removeAction->setData({"disable"});
-    actionLibrary.insert("remove", removeAction);
+    removeAction->setData({"disable"});    actionLibrary.insert("remove", removeAction);
 
 	auto *renameAction = new QAction(QIcon::fromTheme("edit-rename", QIcon::fromTheme("document-properties")) , tr("R&ename..."));
-    renameAction->setData({"disable"});
-    actionLibrary.insert("rename", renameAction);
+    renameAction->setData({"disable"});    actionLibrary.insert("rename", renameAction);
 
+	
+	//  rate
+	auto *a = new QAction(QIcon::fromTheme("edit-rename", QIcon::fromTheme("document-properties")) , tr("Rating End Add"));
+    a->setData({"disable"});    actionLibrary.insert("rateEndAdd", a);
+
+	a = new QAction(QIcon::fromTheme("edit-rename", QIcon::fromTheme("document-properties")) , tr("Rating End Remove"));
+    a->setData({"disable"});    actionLibrary.insert("rateEndRemove", a);
+
+	a = new QAction(QIcon::fromTheme("edit-rename", QIcon::fromTheme("document-properties")) , tr("Rating Front Increase"));
+    a->setData({"disable"});    actionLibrary.insert("rateFrontInc", a);
+
+	a = new QAction(QIcon::fromTheme("edit-rename", QIcon::fromTheme("document-properties")) , tr("Rating Front Decrease"));
+    a->setData({"disable"});    actionLibrary.insert("rateFrontDec", a);
+	
 	
     auto *zoomInAction = new QAction(QIcon::fromTheme("zoom-in"), tr("Zoom &In"));
     zoomInAction->setData({"disable"});
@@ -660,30 +719,31 @@ void ActionManager::initializeActionLibrary()
 
 	
     auto *firstFileAction = new QAction(QIcon::fromTheme("go-first"), tr("&First File"));
-    firstFileAction->setData({"disable"});
-    actionLibrary.insert("firstfile", firstFileAction);
+    firstFileAction->setData({"disable"});    actionLibrary.insert("firstFile", firstFileAction);
 
 	auto *lastFileAction = new QAction(QIcon::fromTheme("go-last"), tr("Las&t File"));
-    lastFileAction->setData({"disable"});
-    actionLibrary.insert("lastfile", lastFileAction);
+    lastFileAction->setData({"disable"});    actionLibrary.insert("lastFile", lastFileAction);
 
 	
-	auto *previousFileAction = new QAction(QIcon::fromTheme("go-previous"), tr("Previous Fi&le"));
-    previousFileAction->setData({"disable"});
-    actionLibrary.insert("previousfile", previousFileAction);
+	//  prev/next
+	a = new QAction(QIcon::fromTheme("go-previous"), tr("Previous Fi&le"));
+    a->setData({"disable"});    actionLibrary.insert("previousFile", a);
 
-    auto *nextFileAction = new QAction(QIcon::fromTheme("go-next"), tr("&Next File"));
-    nextFileAction->setData({"disable"});
-    actionLibrary.insert("nextfile", nextFileAction);
+    a = new QAction(QIcon::fromTheme("go-next"), tr("&Next File"));
+    a->setData({"disable"});    actionLibrary.insert("nextFile", a);
 
-	auto *previousFileSkipAction = new QAction(QIcon::fromTheme("go-previous"), tr("Previous Fi&le Skip"));
-    previousFileSkipAction->setData({"disable"});
-    actionLibrary.insert("previousfileskip", previousFileSkipAction);
+	a = new QAction(QIcon::fromTheme("go-previous"), tr("Previous Fi&le Skip"));
+    a->setData({"disable"});    actionLibrary.insert("previousFileSkip", a);
 
-    auto *nextFileSkipAction = new QAction(QIcon::fromTheme("go-next"), tr("&Next File Skip"));
-    nextFileSkipAction->setData({"disable"});
-    actionLibrary.insert("nextfileskip", nextFileSkipAction);
+    a = new QAction(QIcon::fromTheme("go-next"), tr("&Next File Skip"));
+    a->setData({"disable"});    actionLibrary.insert("nextFileSkip", a);
 
+	a = new QAction(QIcon::fromTheme("go-previous"), tr("Previous File Rated"));
+    a->setData({"disable"});    actionLibrary.insert("previousFileRate", a);
+
+    a = new QAction(QIcon::fromTheme("go-next"), tr("Next File Rated"));
+    a->setData({"disable"});    actionLibrary.insert("nextFileRate", a);
+	
 	
     auto *saveFrameAsAction = new QAction(QIcon::fromTheme("document-save-as"), tr("Save Frame &As..."));
     saveFrameAsAction->setData({"gifdisable"});
